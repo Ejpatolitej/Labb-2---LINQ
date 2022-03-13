@@ -11,6 +11,7 @@ namespace Labb_2___LINQ.Models
         public int StudentID { get; set; }
         public string StudentName { get; set; }
         public string StudentEmail { get; set; }
+        public int CourseID { get; set; }
 
         public Course Course { get; set; }
     }

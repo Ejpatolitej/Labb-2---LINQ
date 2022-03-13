@@ -11,8 +11,8 @@ namespace Labb_2___LINQ.Models
     {
         [Key]
         public int TeacherClassID { get; set; }
-        //public int fkTeacherID { get; set; }
-        //public int fkClassID { get; set; }
+        public int fkTeacherID { get; set; }
+        public int fkClassID { get; set; }
 
         public Teacher Teacher { get; set; }
         public Class Class { get; set; }
