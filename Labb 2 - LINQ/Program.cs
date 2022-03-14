@@ -76,7 +76,26 @@ Console.WriteLine("\n-----------------------------------------------------------
 
 Console.WriteLine("Hämta alla lärare med elever: \n");
 
-//var teachStud = from stud in Context.Students
+//FUNKAR INTE
+
+//var teachStud = from teach in Context.Teachers
+//                join tc in Context.TeacherClasses on teach.TeacherID equals tc.fkTeacherID
+//                join cl in Context.Classes on tc.fkClassID equals cl.ClassID
+//                join cc in Context.CourseClasses on cl.ClassID equals cc.fkClassID
+//                join course in Context.Courses on cc.fkCourseID equals course.CourseID
+//                join stud in Context.Students on course.CourseID equals stud.CourseID
+//                into TSGroup
+//                select new { teach, TSGroup };
+
+//foreach (var item in teachStud)
+//{
+//    Console.WriteLine("Teacher: " + item.teach.TeacherName);
+//    foreach (var s in item.TSGroup)
+//    {
+//        Console.WriteLine(" Student: " + s.StudentName);
+//    }
+
+//}
 
 
 var teachStud = from teach in Context.Teachers
@@ -96,21 +115,6 @@ foreach (var item in teachStud)
 {
     Console.WriteLine("Teacher: {0} \n Student: {1}", item.tName, item.sName);
 }
-
-//foreach (var item in teachStud)
-//{
-//    Console.WriteLine("Lärare: {0} \n Elev: {1}", item.teachName, item.studName);
-//}
-
-//foreach (var t in teachStud)
-//{
-//    Console.WriteLine("Teacher: " + t.teach.TeacherName);
-//    foreach (var s in t.TSGroup)
-//    {
-//        Console.WriteLine(" Student: " + s.StudentName);
-//    }
-//    Console.WriteLine();
-//}
 
 Console.WriteLine("\n-------------------------------------------------------------\n");
 
