@@ -1,14 +1,13 @@
 ﻿using Labb_2___LINQ.Data;
 using Labb_2___LINQ.Models;
 
-
 using SchoolDbContext Context = new SchoolDbContext();
 
 Course course1 = new Course() { CourseName = "SUT21" };
 Course course2 = new Course() { CourseName = "MUT20" };
 Course course3 = new Course() { CourseName = "Ekonomiskt Oberoende 22" };
 
-Class class1 = new Class() { ClassName = "Math" };
+Class class1 = new Class() { ClassName = "Matematik" };
 Class class2 = new Class() { ClassName = "Programmering 1" };
 Class class3 = new Class() { ClassName = "Programmering 2" };
 Class class4 = new Class() { ClassName = "Avancerad .NET" };
@@ -29,7 +28,7 @@ TeacherClass teacherClass2 = new TeacherClass() { fkClassID = 2, fkTeacherID = 1
 TeacherClass teacherClass3 = new TeacherClass() { fkClassID = 3, fkTeacherID = 1 };
 TeacherClass teacherClass4 = new TeacherClass() { fkClassID = 4, fkTeacherID = 2 };
 TeacherClass teacherClass5 = new TeacherClass() { fkClassID = 5, fkTeacherID = 3 };
-TeacherClass teacherClass6 = new TeacherClass() { fkClassID = 2, fkTeacherID = 2 };
+TeacherClass teacherClass6 = new TeacherClass() { fkClassID = 1, fkTeacherID = 1 };
 
 CourseClass courseClass1 = new CourseClass() { fkCourseID = 1, fkClassID = 1 };
 CourseClass courseClass2 = new CourseClass() { fkCourseID = 1, fkClassID = 3 };
@@ -37,8 +36,6 @@ CourseClass courseClass3 = new CourseClass() { fkCourseID = 1, fkClassID = 4 };
 CourseClass courseClass4 = new CourseClass() { fkCourseID = 1, fkClassID = 5 };
 CourseClass courseClass5 = new CourseClass() { fkCourseID = 2, fkClassID = 2 };
 CourseClass courseClass6 = new CourseClass() { fkCourseID = 3, fkClassID = 5 };
-
-Context.SaveChanges();
 
 #region Adding Data to Tables
 
@@ -60,87 +57,64 @@ List<Course> courseList = new List<Course>() { course1, course2, course3 };
 List<TeacherClass> teacherClassList = new List<TeacherClass>() { teacherClass1, teacherClass2, teacherClass3, teacherClass4, teacherClass5, teacherClass6 };
 List<CourseClass> courseClassList = new List<CourseClass>() { courseClass1, courseClass2, courseClass3, courseClass4, courseClass5, courseClass6 };
 
-//Hämta alla lärare i Matte
-IEnumerable<TeacherClass> OOPTeachers = teacherClassList.Where(t => t.Class == class1).ToList();
-foreach (var item in OOPTeachers)
+Context.SaveChanges();
+
+Console.WriteLine("Hämta alla lärare i matte: \n");
+
+var mathTeach = from tc in Context.TeacherClasses
+                join teach in Context.Teachers on tc.fkTeacherID equals teach.TeacherID
+                join cl in Context.Classes on tc.fkClassID equals cl.ClassID
+                where tc.fkClassID == 8
+                select tc.Teacher;
+
+foreach (var item in mathTeach)
 {
-    Console.WriteLine("Lärare i Matte: " + item.Teacher.TeacherName);
+    Console.WriteLine(item.TeacherName);
 }
 
 Console.WriteLine("\n-------------------------------------------------------------\n");
 
-//Hämta alla lärare med elever
+Console.WriteLine("Hämta alla lärare med elever: \n");
 
-//var teachStud = from teach in teacherList
-//                join stud in studentList
-//                on teach.TeacherID equals stud.StudentID
-//                into STGroup
-//                select new { teach, STGroup };
+//var teachStud = from stud in Context.Students
+
+
+var teachStud = from teach in Context.Teachers
+                join tc in Context.TeacherClasses on teach.TeacherID equals tc.fkTeacherID
+                join cl in Context.Classes on tc.fkClassID equals cl.ClassID
+                join cc in Context.CourseClasses on cl.ClassID equals cc.fkClassID
+                join course in Context.Courses on cc.fkCourseID equals course.CourseID
+                join stud in Context.Students on course.CourseID equals stud.CourseID
+                group new { teach, stud } by new { teachName = teach.TeacherName, studName = stud.StudentName } into grp
+                select new
+                {
+                    tName = grp.Key.teachName,
+                    sName = grp.Key.studName,
+                };
+
+foreach (var item in teachStud)
+{
+    Console.WriteLine("Teacher: {0} \n Student: {1}", item.tName, item.sName);
+}
+
+//foreach (var item in teachStud)
+//{
+//    Console.WriteLine("Lärare: {0} \n Elev: {1}", item.teachName, item.studName);
+//}
 
 //foreach (var t in teachStud)
 //{
 //    Console.WriteLine("Teacher: " + t.teach.TeacherName);
-//    foreach (var s in t.STGroup)
+//    foreach (var s in t.TSGroup)
 //    {
 //        Console.WriteLine(" Student: " + s.StudentName);
 //    }
 //    Console.WriteLine();
 //}
 
-//var teachStud = from teach in teacherList
-//                join tc in teacherClassList
-//                on teach.TeacherID equals tc.TeacherClassID
-//                join cl in classList
-//                on tc.TeacherClassID equals cl.ClassID
-//                join cc in courseClassList
-//                on cl.ClassID equals cc.CourseClassID
-//                join co in courseList
-//                on cc.CourseClassID equals co.CourseID
-//                join stud in studentList
-//                on co.CourseID equals stud.StudentID
-//                select new { 
-
-//                    teachName = teach.TeacherName,
-//                    studName = stud.StudentName
-
-//                };
-
-//foreach (var t in teachStud)
-//{
-//    Console.WriteLine("Teacher: " + t.teachName);
-//    foreach (var s in t)
-//    {
-//        Console.WriteLine(" Student: " + s);
-//    }
-//    Console.WriteLine();
-//}
-
-//var studTeach = from stud in studentList
-//                join co in courseList
-//                on stud.StudentID equals co.CourseID
-//                join cc in courseClassList
-//                on co.CourseID equals cc.CourseClassID
-//                join cl in classList
-//                on cc.CourseClassID equals cl.ClassID
-//                join tc in teacherClassList
-//                on cl.ClassID equals tc.TeacherClassID
-//                join teach in teacherList
-//                on tc.TeacherClassID equals teach.TeacherID
-//                into studGroup
-//                select new { stud, studGroup };
-//foreach (var item in studTeach)
-//{
-//    Console.WriteLine("Student: " + item.stud.StudentName);
-//    foreach (Teacher t in item.studGroup)
-//    {
-//        Console.WriteLine("Teacher: " + t.TeacherName);
-//    }
-//    Console.WriteLine();
-//}
-
 Console.WriteLine("\n-------------------------------------------------------------\n");
 
-//Kolla om ämnet finns i tabell
+Console.WriteLine("Kolla om Programmering 1 finns i tabell med klasser: \n");
 var checkClass = classList.Where(c => c.ClassName == "Programmering 1");
 
 if (checkClass == null)
@@ -154,7 +128,7 @@ else
 
 Console.WriteLine("\n-------------------------------------------------------------\n");
 
-//Ändra Ämne
+Console.WriteLine("Ändra namn på programmering 1 till OOP: \n");
 IEnumerable<Class> changeClass = classList.Where(c => c.ClassName == "Programmering 1").ToList();
 foreach (var item in changeClass)
 {
@@ -171,7 +145,7 @@ foreach (var item in classList)
 
 Console.WriteLine("\n-------------------------------------------------------------\n");
 
-//Ändra lärare
+Console.WriteLine("Byt lärare från Anas till Reidar i tabell: \n");
 IEnumerable<Teacher> changeTeacher = teacherList.Where(t => t.TeacherName == "Anas").ToList();
 foreach (var item in changeTeacher)
 {
